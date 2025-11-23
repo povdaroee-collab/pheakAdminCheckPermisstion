@@ -87,6 +87,13 @@ export async function performAdminAction(id, type, action, adminName) {
  * Calls onDataUpdate(requests, allDepartments) on success.
  * Calls onError(error) on failure.
  */
+// ### FILE: firebase-service.js (កែសម្រួល Filter កាលបរិច្ឆេទ) ###
+
+// ... (រក្សាកូដ import និង initializeFirebase ដដែល) ...
+
+/**
+ * Detaches the old listener and sets up a new real-time listener for requests.
+ */
 export function listenToRequests(statusFilter, settings, onDataUpdate, onError) {
     if (currentUnsubscribe) {
         console.log("Unsubscribing previous listener.");
@@ -103,18 +110,39 @@ export function listenToRequests(statusFilter, settings, onDataUpdate, onError) 
     let listeners = [];
     let initialLoadsPending = collectionsToQuery.length;
 
+    // [NEW] កំណត់ថ្ងៃចាប់ផ្តើម (Cutoff Date): 23 វិច្ឆិកា 2025, ម៉ោង 00:00:00
+    // ខែក្នុង JavaScript រាប់ពី 0 (Jan=0, ..., Nov=10)
+    const START_FROM_DATE = new Date(2025, 10, 23, 0, 0, 0); 
+
     // This function will be called by both listeners on every update
     const processResults = () => {
         let filteredRequests = [...allRequests];
 
-        // [NEW] 1. Global Filter: Exclude "IT support" immediately
-        // យើងត្រងយកតែសំណើណាដែល *មិនមែន* "IT support"
+        // [UPDATED] 1. Global Filter: (No IT Support + Date >= 23/11/2025)
         filteredRequests = filteredRequests.filter(req => {
+            // A. ត្រងមិនយកផ្នែក "IT Support"
             const dept = req.department ? req.department.toLowerCase().trim() : '';
-            return dept !== 'it support'; 
+            if (dept === 'it support') return false;
+
+            // B. [NEW] ត្រងយកតែសំណើចាប់ពីថ្ងៃទី 23/11/2025 ឡើងទៅ
+            // បំប្លែង requestedAt ទៅជា Date Object
+            let requestDate;
+            if (req.requestedAt?.toDate) {
+                requestDate = req.requestedAt.toDate();
+            } else if (req.requestedAt?.seconds) {
+                requestDate = new Date(req.requestedAt.seconds * 1000);
+            } else if (typeof req.requestedAt === 'string') {
+                requestDate = new Date(req.requestedAt);
+            } else {
+                // បើគ្មានថ្ងៃខែជាក់លាក់ អាចសម្រេចចិត្តថាបង្ហាញ ឬអត់ (នៅទីនេះខ្ញុំដកចេញ)
+                return false; 
+            }
+
+            // ប្រៀបធៀប: ពេលវេលាស្នើសុំ ត្រូវធំជាង ឬស្មើ ថ្ងៃទី 23
+            return requestDate >= START_FROM_DATE;
         });
 
-        // 2. Month filter
+        // 2. Month filter (តាម Settings)
         if (settings.filterCurrentMonth) {
             const now = new Date();
             const currentMonthYear = `${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
@@ -155,7 +183,7 @@ export function listenToRequests(statusFilter, settings, onDataUpdate, onError) 
             snapshot.forEach(doc => {
                 const data = doc.data();
                 
-                // [NEW] បន្ថែមតែផ្នែកដែលមិនមែន "IT support" ចូលក្នុង Filter Dropdown
+                // បន្ថែមផ្នែកចូលក្នុង Filter (ដក IT Support ចេញពី List ផងដែរ)
                 if (data.department) {
                     const deptName = data.department.trim();
                     if (deptName.toLowerCase() !== 'it support') {
