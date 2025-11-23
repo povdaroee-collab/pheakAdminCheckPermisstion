@@ -462,6 +462,13 @@ function renderCompactCard(request) {
  * ពិនិត្យមើល Logic សម្រាប់ប៊ូតុងលុប (Delete Button Logic)
  * ប្រើរួមគ្នាដោយ renderRequestCard និង showRequestDetailModal
  */
+// ### FILE: app.js (កែសម្រួល getDeleteButtonHtml) ###
+
+/**
+ * ពិនិត្យមើល Logic សម្រាប់ប៊ូតុងលុប (Delete Button Logic)
+ * [Updated] សំណើដែល Approved ហើយ មិនអាចលុបបានទេ។
+ * [Updated] សំណើ Rejected អាចលុបបានក្នុងរយៈពេល 55 នាទី។
+ */
 function getDeleteButtonHtml(request) {
     let deleteButton = ''; // Default: មិនបង្ហាញប៊ូតុងលុប
     const now = new Date();
@@ -474,22 +481,29 @@ function getDeleteButtonHtml(request) {
             </button>
         `;
     } else if (request.status === 'editing') {
-        // (Part 1) មិនអនុញ្ញាតឲ្យលុប ពេល 'editing'
+        // (Part 2) មិនអនុញ្ញាតឲ្យលុប ពេល 'editing'
         deleteButton = `
             <span class="text-gray-400 dark:text-gray-500 p-1" title="កំពុងកែសម្រួល, មិនអាចលុបបាន">
                 <i class="fas fa-ban fa-fw"></i>
             </span>
         `;
-    } else if (request.status === 'approved' || request.status === 'rejected') {
-        // (Part 2) ពិនិត្យច្បាប់ 55 នាទី
+    } else if (request.status === 'approved') {
+        // [NEW] សំណើដែលបាន "អនុម័ត" ហើយ មិនអាចលុបបានទេ (បង្ហាញសោរ)
+        deleteButton = `
+            <span class="text-green-600 dark:text-green-500 p-1" title="សំណើបានអនុម័តហើយ មិនអាចលុបបានទេ">
+                <i class="fas fa-check-circle fa-fw"></i>
+            </span>
+        `;
+    } else if (request.status === 'rejected') {
+        // (Part 3) សម្រាប់ 'rejected' នៅរក្សាលក្ខខណ្ឌ 55 នាទីដដែល
         let decisionTime;
         
         if (request.decisionAt?.toDate) {
-            decisionTime = request.decisionAt.toDate(); // ពី Firestore Timestamp
+            decisionTime = request.decisionAt.toDate();
         } else if (request.decisionAt?.seconds) {
-            decisionTime = new Date(request.decisionAt.seconds * 1000); // ពី Serialized object
+            decisionTime = new Date(request.decisionAt.seconds * 1000);
         } else if (request.decisionAt) {
-            try { decisionTime = new Date(request.decisionAt); } catch(e){} // ពី String
+            try { decisionTime = new Date(request.decisionAt); } catch(e){}
         }
 
         if (decisionTime && !isNaN(decisionTime.getTime())) {
@@ -506,7 +520,7 @@ function getDeleteButtonHtml(request) {
                     </button>
                 `;
             } else {
-                // លើស 55 នាទី: បង្ហាញ icon lock
+                // លើស 55 នាទី: មិនអាចលុបបាន
                 deleteButton = `
                     <span class="text-gray-400 dark:text-gray-500 p-1" title="ផុតកំណត់ (55 នាទី) មិនអាចលុបបានទៀតទេ">
                         <i class="fas fa-lock fa-fw"></i>
@@ -514,9 +528,8 @@ function getDeleteButtonHtml(request) {
                 `;
             }
         } else {
-            // រកមិនឃើញ decisionAt ឬទិន្នន័យមិនត្រឹមត្រូវ
-            deleteButton = `
-                <span class="text-gray-400 dark:text-gray-500 p-1" title="មិនមានពេលវេលាសម្រេចចិត្ត (decisionAt)">
+             deleteButton = `
+                <span class="text-gray-400 dark:text-gray-500 p-1" title="មិនមានពេលវេលាសម្រេចចិត្ត">
                     <i class="fas fa-question-circle fa-fw"></i>
                 </span>
              `;
