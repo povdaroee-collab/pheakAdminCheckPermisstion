@@ -19,7 +19,7 @@ const firebaseConfig = {
 };
 
 // --- Global State & Element References ---
-const ADMIN_NAME = "លោកគ្រូ ពៅ ដារ៉ូ";
+const ADMIN_NAME = "លោកគ្រូ ខេង ភក្ដី";
 let globalAllRequests = []; // For detail modal
 let allDepartments = new Set(); // For department filter
 
