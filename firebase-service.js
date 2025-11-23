@@ -78,6 +78,10 @@ export async function performAdminAction(id, type, action, adminName) {
     throw new Error("Invalid action specified.");
 }
 
+// ### FILE: firebase-service.js (ផ្នែក listenToRequests ត្រូវបានកែប្រែ) ###
+
+// ... (កូដផ្នែកខាងលើរក្សាទុកដដែល) ...
+
 /**
  * Detaches the old listener and sets up a new real-time listener for requests.
  * Calls onDataUpdate(requests, allDepartments) on success.
@@ -103,7 +107,14 @@ export function listenToRequests(statusFilter, settings, onDataUpdate, onError) 
     const processResults = () => {
         let filteredRequests = [...allRequests];
 
-        // 1. Month filter
+        // [NEW] 1. Global Filter: Exclude "IT support" immediately
+        // យើងត្រងយកតែសំណើណាដែល *មិនមែន* "IT support"
+        filteredRequests = filteredRequests.filter(req => {
+            const dept = req.department ? req.department.toLowerCase().trim() : '';
+            return dept !== 'it support'; 
+        });
+
+        // 2. Month filter
         if (settings.filterCurrentMonth) {
             const now = new Date();
             const currentMonthYear = `${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
@@ -115,19 +126,19 @@ export function listenToRequests(statusFilter, settings, onDataUpdate, onError) 
             });
         }
         
-        // 2. Approved Type filter
+        // 3. Approved Type filter
         if (statusFilter === 'approved' && settings.approvedFilterType !== 'all') {
             filteredRequests = filteredRequests.filter(doc => doc.type === settings.approvedFilterType);
         }
         
-        // 3. Department filter
+        // 4. Department filter
         if (settings.filterByDepartment && settings.selectedDepartment !== 'all') {
             filteredRequests = filteredRequests.filter(doc => doc.department === settings.selectedDepartment);
         }
         
         // Pass the final data back to app.js
         onDataUpdate(filteredRequests, allDepartments, initialLoadsPending);
-        if (initialLoadsPending > 0) initialLoadsPending = 0; // Only matters for first load
+        if (initialLoadsPending > 0) initialLoadsPending = 0; 
     };
 
     collectionsToQuery.forEach(collectionPath => {
@@ -138,14 +149,21 @@ export function listenToRequests(statusFilter, settings, onDataUpdate, onError) 
         else q = query(baseCollectionRef, where('status', '==', statusFilter));
 
         const unsubscribe = onSnapshot(q, (snapshot) => {
-            console.log(`Snapshot received for ${collectionPath.split('/').pop()}, Status: ${statusFilter}, Size: ${snapshot.size}`);
             const type = collectionPath.includes('leave_requests') ? 'leave' : 'out';
             
             let currentDocs = [];
             snapshot.forEach(doc => {
                 const data = doc.data();
+                
+                // [NEW] បន្ថែមតែផ្នែកដែលមិនមែន "IT support" ចូលក្នុង Filter Dropdown
+                if (data.department) {
+                    const deptName = data.department.trim();
+                    if (deptName.toLowerCase() !== 'it support') {
+                        allDepartments.add(deptName);
+                    }
+                }
+
                 currentDocs.push({ ...data, id: doc.id, type: type });
-                if (data.department) allDepartments.add(data.department);
             });
 
             // Update the combined list
@@ -154,7 +172,7 @@ export function listenToRequests(statusFilter, settings, onDataUpdate, onError) 
             
         }, (error) => {
             console.error(`Error listening to ${collectionPath}:`, error);
-            onError(error); // Pass error back to app.js
+            onError(error); 
         });
         listeners.push(unsubscribe);
     });
