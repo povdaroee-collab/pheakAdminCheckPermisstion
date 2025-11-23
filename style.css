@@ -1,0 +1,194 @@
+/* [NEW] CSS Variables for Theming */
+:root, [data-theme="original"] {
+    --bg-primary: 255 255 255; /* white */
+    --bg-secondary: 249 250 251; /* gray-50 */
+    --bg-header: 37 99 235; /* blue-600 */
+    --text-header: 255 255 255; /* white */
+    --text-primary: 17 24 39; /* gray-900 */
+    --text-secondary: 107 114 128; /* gray-500 */
+    --border-primary: 229 231 235; /* gray-200 */
+    --border-secondary: 243 244 246; /* gray-100 */
+    --card-bg: 255 255 255; /* white */
+    --card-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+}
+
+:root.dark, [data-theme="original"].dark {
+    --bg-primary: 31 41 55; /* gray-800 */
+    --bg-secondary: 17 24 39; /* gray-900 */
+    --bg-header: 37 99 235; /* blue-600 */
+    --text-header: 255 255 255; /* white */
+    --text-primary: 249 250 251; /* gray-50 */
+    --text-secondary: 156 163 175; /* gray-400 */
+    --border-primary: 55 65 81; /* gray-700 */
+    --border-secondary: 75 85 99; /* gray-600 */
+    --card-bg: 49 58 73; /* gray-750 custom */
+    --card-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.3), 0 1px 2px -1px rgb(0 0 0 / 0.3);
+}
+
+[data-theme="glass"], [data-theme="glass"].dark {
+     /* Settings are for the card, not the whole bg */
+    --card-bg: 255 255 255 / 0.5;
+    --border-primary: 255 255 255 / 0.3;
+    --border-secondary: 255 255 255 / 0.2;
+    --text-primary: 17 24 39;
+    --text-secondary: 55 65 81;
+}
+[data-theme="glass"].dark {
+    --card-bg: 31 41 55 / 0.6;
+    --border-primary: 255 255 255 / 0.2;
+    --border-secondary: 255 255 255 / 0.1;
+    --text-primary: 249 250 251;
+    --text-secondary: 209 213 219;
+}
+
+[data-theme="ocean"], [data-theme="ocean"].dark {
+    --bg-primary: 240 253 250; /* teal-50 */
+    --bg-secondary: 204 251 241; /* teal-100 */
+    --bg-header: 13 148 136; /* teal-600 */
+    --text-header: 255 255 255;
+    --text-primary: 15 118 110; /* teal-800 */
+    --text-secondary: 17 139 127; /* teal-700 */
+    --border-primary: 153 246 228; /* teal-200 */
+    --border-secondary: 178 245 234; /* teal-150 custom */
+    --card-bg: 255 255 255;
+}
+[data-theme="ocean"].dark {
+    --bg-primary: 20 83 45; /* dark green */
+    --bg-secondary: 17 70 40; 
+    --bg-header: 94 234 212; /* teal-300 */
+    --text-header: 13 148 136; /* teal-600 */
+    --text-primary: 153 246 228; /* teal-200 */
+    --text-secondary: 178 245 234;
+    --border-primary: 40 120 70;
+    --border-secondary: 45 130 75;
+    --card-bg: 25 90 50;
+}
+
+[data-theme="forest"], [data-theme="forest"].dark {
+    --bg-primary: 254 252 232; /* yellow-50 */
+    --bg-secondary: 254 249 195; /* yellow-100 */
+    --bg-header: 133 77 14; /* amber-800 */
+    --text-header: 255 255 255;
+    --text-primary: 120 53 15; /* amber-900 */
+    --text-secondary: 146 64 14; /* amber-800 */
+    --border-primary: 253 230 138; /* yellow-300 */
+    --border-secondary: 254 240 138; /* yellow-200 */
+    --card-bg: 255 255 255;
+}
+[data-theme="forest"].dark {
+    --bg-primary: 41 37 36; /* stone-800 */
+    --bg-secondary: 28 25 23; /* stone-900 */
+    --bg-header: 252 211 77; /* yellow-400 */
+    --text-header: 120 53 15; /* amber-900 */
+    --text-primary: 253 230 138; /* yellow-300 */
+    --text-secondary: 252 211 77; /* yellow-400 */
+    --border-primary: 68 64 60; /* stone-700 */
+    --border-secondary: 87 83 78; /* stone-600 */
+    --card-bg: 51 46 45; /* stone-750 custom */
+}
+
+
+/* [NEW] Utility Classes from Variables */
+.bg-primary { background-color: rgb(var(--bg-primary)); }
+.bg-secondary { background-color: rgb(var(--bg-secondary)); }
+.bg-header { background-color: rgb(var(--bg-header)); }
+.text-header { color: rgb(var(--text-header)); }
+.text-primary { color: rgb(var(--text-primary)); }
+.text-secondary { color: rgb(var(--text-secondary)); }
+.border-primary { border-color: rgb(var(--border-primary)); }
+.border-secondary { border-color: rgb(var(--border-secondary)); }
+.card-bg { background-color: rgb(var(--card-bg)); box-shadow: var(--card-shadow); }
+ 
+/* [NEW] Glass Theme Background Image */
+#body-bg-image {
+    background-image: url('https://images.unsplash.com/photo-1553095066-5014bc7b7f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8d2FsbCUyMGJhY2tncm91bmR8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=800&q=60');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: -10;
+}
+ 
+/* [NEW] Style cards for Glass Theme */
+[data-theme="glass"] .card-bg, [data-theme="glass"] .bg-primary, [data-theme="glass"] .bg-secondary, [data-theme="glass"] .bg-header, [data-theme="glass"] nav {
+    backdrop-filter: blur(10px) saturate(180%);
+    -webkit-backdrop-filter: blur(10px) saturate(180%);
+}
+/* Override for glass theme cards */
+[data-theme="glass"] .card-bg {
+    background-color: rgba(var(--card-bg));
+    border: 1px solid rgba(var(--border-primary));
+}
+[data-theme="glass"].dark .card-bg {
+     background-color: rgba(var(--card-bg));
+     border: 1px solid rgba(var(--border-primary));
+}
+
+
+body { 
+    font-family: 'Kantumruy Pro', sans-serif; 
+    -webkit-tap-highlight-color: transparent; 
+    /* [NEW] Applied from CSS vars */
+    @apply bg-secondary text-primary transition-colors duration-300;
+}
+.spinner { border: 4px solid rgba(0, 0, 0, 0.1); width: 24px; height: 24px; border-radius: 50%; border-left-color: #3b82f6; /* blue-500 */ animation: spin 1s ease infinite; }
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+.break-inside-avoid { break-inside: avoid; page-break-inside: avoid; }
+ 
+#main-content-area, #settings-page {
+    padding-bottom: 80px; /* Space for footer nav */
+}
+
+/* [MODIFIED] Toggle Switch Styles (Re-using existing, good style) */
+.toggle-label {
+    @apply block overflow-hidden cursor-pointer h-7 w-12 rounded-full bg-gray-300 transition-colors duration-200 ease-in-out dark:bg-gray-600;
+}
+.toggle-checkbox {
+    @apply absolute left-0 opacity-0 w-0 h-0;
+}
+.toggle-dot {
+    @apply block w-5 h-5 rounded-full bg-white shadow-md transform translate-x-1 translate-y-1 transition-transform duration-200 ease-in-out;
+}
+.toggle-checkbox:checked + .toggle-label {
+    @apply bg-blue-600;
+}
+.toggle-checkbox:checked + .toggle-label .toggle-dot {
+    @apply transform translate-x-6;
+}
+ 
+/* [NEW] Custom Radio/Select Styles */
+.settings-radio-label {
+    @apply block text-sm font-medium text-primary p-2 px-3 border border-primary rounded-lg cursor-pointer hover:bg-secondary;
+}
+.settings-radio:checked + .settings-radio-label {
+    @apply bg-blue-50 border-blue-400 text-blue-700 dark:bg-blue-900 dark:border-blue-600 dark:text-blue-200;
+}
+.settings-select {
+     @apply w-full p-2.5 border border-primary rounded-lg shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 text-sm bg-primary text-primary;
+     -webkit-appearance: none; -moz-appearance: none; appearance: none;
+     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+     background-position: right 0.5rem center; background-repeat: no-repeat; background-size: 1.5em 1.5em;
+     padding-right: 2.5rem;
+}
+.dark .settings-select {
+     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%239ca3af' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E");
+}
+ 
+/* [MODIFIED] Settings Card Style */
+.settings-card {
+    @apply bg-primary p-3 rounded-lg shadow-sm border border-primary;
+}
+
+/* [MODIFIED] Segmented Control Styles (Higher Contrast) */
+.segmented-control {
+    /* Using static colors for better contrast */
+    @apply flex w-full p-1 rounded-lg bg-gray-200 dark:bg-gray-800;
+}
+.segmented-label {
+    @apply block text-sm font-medium text-center text-gray-600 dark:text-gray-400 p-1.5 rounded-md cursor-pointer transition-colors duration-200 flex-1;
+}
+.settings-radio:checked + .segmented-label {
+    /* High contrast selected button */
+    @apply bg-white dark:bg-gray-600 text-blue-600 dark:text-white shadow-md font-medium;
+}
